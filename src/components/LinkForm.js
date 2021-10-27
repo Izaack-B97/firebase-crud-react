@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-export const LinkForm = ({ addOrEdit }) => {
+export const LinkForm = ({ addOrEditLink, currentID = '', links = [] }) => {
 
     const initialStateValues = {
         url: '',
@@ -14,18 +14,26 @@ export const LinkForm = ({ addOrEdit }) => {
 
     const handleSubmit = ( e ) => {
         e.preventDefault();
-        addOrEdit( formData );
+        addOrEditLink( formData );
         setFormData( initialStateValues );
     }
 
     const handleInputChange = ( e ) => {
         const { name, value } = e.target;
-        // console.log( name, value );
         setFormData({
             ...formData,
             [ name ] : value
         })
     }
+
+    useEffect(() => {        
+        if ( currentID === '' ) {
+            setFormData( initialStateValues );
+        } else {
+            const link = links.find( link => link.id === currentID );
+            setFormData( link );   
+        }
+    }, [ currentID ])
 
     return (
         <form className='card card-body' onSubmit={ handleSubmit } >
@@ -45,7 +53,7 @@ export const LinkForm = ({ addOrEdit }) => {
                 <textarea name='description' rows='3' className='form-control' placeholder='Write a description...' onChange={ handleInputChange } value={ description }/>
             </div>
             <button className='btn btn-primary btn-block mt-2'>
-                Save
+                { currentID === '' ? 'Save' : 'Update' }
             </button>
         </form>
     )
